@@ -1,0 +1,39 @@
+2016年7月31日15:46:17 Version 3.5
+[Improvement] To optimize the way create markdown files.
+[Improvement] File optimized scheduling.
+[Bugs] Fix some bugs.
+
+
+
+
+2016年5月30日15:34:33
+[Upgrade] To upgrade interface style
+[Upgrade] Upgrade the KATEX component to V0.6.0. https://khan.github.io/KaTeX/
+[Upgrade] Upgrade components : Jquery upgrades to 1.12.4
+[Upgrade] Upgrade components : utils.js upgraded
+[Upgrade] CodeMirror upgraded to 5.15.2
+[Upgrade] code-block upgrade language configuration
+[Upgrade] Optimize the Image plug-in
+[Improvement] Mark the current Markdown document being edited
+[Improvement] To the workspace file listing, we canceled sorting by last editing time
+[Improvement] Eidtormd.js added before function . For example: before loading , before the change, preview, before full screen 
+[Improvement]In the editor’s work area, the title bar can realize fast switch the edit files.
+[Improvement] To change the style of the setting
+Under [Bug]Under the unwatch state , we also can preview, but without preview content. Solution: Before preview, open the live preview first , and then close.
+
+
+2016-04-29 08:06:48
+
+[Upgrade] It can enhance drag and drop capabilities, and distinguish file types and the current state of the page.
+[Upgrade] Workspace, supports drag and drop images and other documents to establish quick links and image preview.
+[Upgrade] PDF exports without displaying file names.
+[Upgrade] Strengthened Workspace Editor’s built-in functions.
+[Upgrade] Provide Simplified Chinese, Traditional Chinese, Japanese, German operation interface.
+[Fixed] Fixed the user interface layout confusing issue, when switch to other Markdown files.
+[Fixed] Fixed the preview area on the right layout error problem, when a current Markdown files which is in full-screen preview to switch to another Markdown document. 
+[Fixed] Fixed problems when preview Markdown files without navigation toolbar hidden.
+[Fixed] Fixed the problem of chaotic contents when Markdown files export to PDF.
+[Fixed] Support files which use [ "markdown", "md", "mkd", "markdown", "ron"] as extension names.
+[Fixed] Fixed the desktop notifications no pop problem.
+[Fixed] Fixed the drag and drop files into the workspace’s failure problem.
+[Fixed] File’s Change triggered message delivered repeatedly in a multi-file editing mode.

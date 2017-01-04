@@ -1,0 +1,274 @@
+/**
+ * Body CSS
+ */
+html,
+body {
+  height: 100%;
+}
+/* Add font-smoothing */
+html,
+body,
+input,
+textarea,
+buttons {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+}
+/**
+ * Romanysoft Custom CSS
+ */
+.rs-top-pandding-panel {
+  margin-top: 16px;
+  padding: 12px;
+}
+/**
+ * Layout CSS
+ */
+#header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 99;
+  transition: left 0.2s;
+  -ms-transition: left 0.2s;
+  /* IE 9 */
+  -moz-transition: left 0.2s;
+  /* Firefox */
+  -webkit-transition: left 0.2s;
+  /* Safari 和 Chrome */
+  -o-transition: left 0.2s;
+  /* Opera */
+}
+#header #nav-title {
+  word-break: break-all;
+}
+#sidedrawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 200px;
+  left: -200px;
+  overflow: auto;
+  z-index: 100;
+  background-color: #fff;
+  transition: transform 0.2s;
+  -ms-transform: transform 0.2s;
+  /* IE 9 */
+  -moz-transform: transform 0.2s;
+  /* Firefox */
+  -webkit-transform: transform 0.2s;
+  /* Safari 和 Chrome */
+  -o-transform: transform 0.2s;
+  /* Opera */
+  border-radius: 0;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.66), 0 0 2px 0 rgba(0, 0, 0, 0.12);
+}
+#content-wrapper {
+  min-height: 100%;
+  overflow-x: hidden;
+  margin-left: 0px;
+  transition: margin-left 0.2s;
+  -ms-transition: margin-left 0.2s;
+  /* IE 9 */
+  -moz-transition: margin-left 0.2s;
+  /* Firefox */
+  -webkit-transition: margin-left 0.2s;
+  /* Safari 和 Chrome */
+  -o-transition: margin-left 0.2s;
+  /* Opera */
+  /* sticky bottom */
+  margin-bottom: -48px;
+  padding-bottom: 48px;
+}
+@media (min-width: 768px) {
+  #header {
+    left: 200px;
+    max-height: 64px;
+  }
+  #sidedrawer {
+    transform: translate(200px);
+    -ms-transform: translate(200px);
+    /* IE 9 */
+    -moz-transform: translate(200px);
+    /* Firefox */
+    -webkit-transform: translate(200px);
+    /* Safari 和 Chrome */
+    -o-transform: translate(200px);
+    /* Opera */
+  }
+  #content-wrapper {
+    margin-left: 200px;
+  }
+  body.hide-sidedrawer #header {
+    left: 0;
+  }
+  body.hide-sidedrawer #sidedrawer {
+    transform: translate(0px);
+    -ms-transform: translate(0px);
+    /* IE 9 */
+    -moz-transform: translate(0px);
+    /* Firefox */
+    -webkit-transform: translate(0px);
+    /* Safari 和 Chrome */
+    -o-transform: translate(0px);
+    /* Opera */
+  }
+  body.hide-sidedrawer #content-wrapper {
+    margin-left: 0;
+  }
+  body.hide-sidedrawer #footer {
+    margin-left: 0;
+  }
+}
+/**
+ * Toggle Sidedrawer
+ */
+#sidedrawer.active {
+  transform: translate(200px);
+  -ms-transform: translate(200px);
+  /* IE 9 */
+  -moz-transform: translate(200px);
+  /* Firefox */
+  -webkit-transform: translate(200px);
+  /* Safari 和 Chrome */
+  -o-transform: translate(200px);
+  /* Opera */
+}
+/**
+ * Header CSS
+ */
+.sidedrawer-toggle {
+  color: #fff;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 20px;
+  margin-right: 10px;
+}
+.sidedrawer-toggle:hover {
+  color: #fff;
+  text-decoration: none;
+}
+#header-workspace-filelist .rs-badge {
+  border-radius: 999999px;
+  background-color: #616161;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+}
+#header-workspace-filelist .rs-ul-filelist {
+  overflow: auto;
+  height: 500%;
+}
+#header-workspace-filelist .rs-ul-filelist li .rs-badge {
+  border-radius: 0px;
+  padding: 4px;
+  color: #FFFFFF;
+}
+#header-workspace-filelist .rs-ul-filelist li .rs-mark-current {
+  background-color: #2196F3;
+  border-radius: 8px 0px 0px 0px;
+}
+/**
+ * Sidedrawer CSS
+ */
+#sidedrawer #sidedrawer-brand {
+  padding-left: 20px;
+  font-size: 20px;
+  font-weight: 400;
+}
+#sidedrawer ul {
+  list-style: none;
+}
+#sidedrawer > ul {
+  padding-left: 0px;
+}
+#sidedrawer > ul > li:first-child {
+  padding-top: 15px;
+}
+#sidedrawer > ul > li .mui-btn {
+  text-align: left;
+  width: 100%;
+}
+#sidedrawer strong {
+  display: block;
+  padding: 15px 22px;
+  cursor: pointer;
+}
+#sidedrawer strong:hover {
+  background-color: #E0E0E0;
+}
+#sidedrawer strong + ul > li {
+  padding: 6px 0px;
+}
+#view-files {
+  margin-left: auto;
+  margin-right: auto;
+}
+#view-files tbody tr td:nth-child(1) {
+  width: 4%;
+}
+#view-files tbody tr td:nth-child(2) {
+  width: 30%;
+}
+#view-files tbody tr td:nth-child(3) {
+  width: 44%;
+}
+#view-files tbody tr td:nth-child(4) {
+  width: 22%;
+}
+#view-files tbody tr td:nth-child(4) .mui-btn--small {
+  height: 16px;
+  line-height: 0px;
+  padding: 0 4px;
+  font-size: 13px;
+}
+#view-files .rs-mark-current {
+  background-color: #2196F3;
+  color: #FFFFFF;
+  padding: 4px;
+  border-radius: 8px 0px 0px 0px;
+}
+#view-files input {
+  font-size: 11px;
+}
+#view-workspace .mui-panel {
+  padding: 0px 15px 15px;
+}
+#view-workspace .editormd {
+  border: none !important;
+}
+#view-settings .jsoneditor {
+  border: none !important;
+}
+#view-settings .jsoneditor .jsoneditor-menu {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+#view-about {
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 13px;
+}
+#view-about .ref-credits {
+  padding: 8px;
+  margin-top: 40px;
+}
+#view-about ul {
+  padding: 2px;
+  list-style: none;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+#view-about ul li {
+  display: list-item;
+  text-align: -webkit-match-parent;
+  text-decoration: none;
+}
+#view-about ul li section {
+  border-bottom: 1px dotted #e6e6e6;
+}
+#view-about ul li a {
+  cursor: pointer;
+}

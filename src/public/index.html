@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MarkdownD</title>
+
+    <link rel="stylesheet" type="text/css" media="screen" href="common/font-awesome-4.5.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="common/editor.md/1.6.0/editor.md/css/editormd.min.css"/>
+    <link rel="stylesheet" type="text/css" media="screen" href="common/mui/mui-0.6.5/css/mui.css"/>
+    <link rel="stylesheet" type="text/css" media="screen" href="common/jsoneditor/5.5.5/jsoneditor.min.css"/>
+
+    <link rel="stylesheet" type="text/css" media="screen" href="styles/style.css"/>
+</head>
+<body>
+<canvas id="canvas_for_text_width" style="display:none;"></canvas>
+<!-- ############################################################################## -->
+<!-- 左侧边栏 -->
+<div id="sidedrawer" class="mui--no-user-select">
+</div>
+
+<!-- 头工具栏 -->
+<header id="header">
+    <div class="mui-appbar mui--appbar-height mui--appbar-line-height">
+        <div class="mui-container-fluid mui--appbar-height">
+            <a class="sidedrawer-toggle mui--visible-xs-inline-block mui--visible-sm-inline-block js-show-sidedrawer">☰</a>
+            <a class="sidedrawer-toggle mui--hidden-xs mui--hidden-sm js-hide-sidedrawer">☰</a>
+            <span id="nav-title" class="mui--text-title"></span>
+            <div id="nav-right" class="mui--pull-right mui--appbar-height">
+                <div id="header-workspace-filelist" class="mui-dropdown mui--hide"></div>
+                <div id="header-files" class="mui--hide"></div>
+                <div id="header-settings" class="mui--hide"></div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- 内容栏 -->
+<div id="content-wrapper">
+    <div class="mui--appbar-height"></div>
+    <div class="mui-container-fluid">
+        <div id="view-files" style="display: none"></div>
+        <div id="view-workspace" style="display: none"></div>
+        <div id="view-plugins" style="display: none"></div>
+        <div id="view-settings" style="display: none"></div>
+        <div id="view-about" style="display: none"></div>
+        <div id="view-print" style="display: none"></div>
+    </div>
+    <!-- 临时输入文件 -->
+    <input id="g-input-file" type="file" class="mui-form-control" style="display: none">
+</div>
+<!-- ############################################################################## -->
+
+
+
+<script id="tpl_sidedrawer" type='text/html'>
+    <!--左侧导航-->
+    <div id="sidedrawer-brand" class="mui--appbar-line-height">
+        {{appName}} <sub>{{appVersion}}</sub>
+    </div>
+    <div class="mui-divider"></div>
+    <ul>
+        {{each navList as button i}}
+        <li>
+            <a href="{{button.href}}" class="mui-btn mui-btn-default mui-btn-flat" title="{{button.name}}"><i class="fa {{button.class}}" ></i>  {{ button.name }}</a>
+        </li>
+        {{/each}}
+    </ul>
+</script>
+
+<!-- 标题栏右侧的工具栏，适用于File状态 -->
+<script id="tpl_header-files" type='text/html'>
+    <toolbar>
+        {{each buttons as button i}}
+        <a href="{{button.href}}" class="mui-btn mui-btn--primary mui-btn--raised" title="{{button.name}}"><i class="fa {{button.class}}" ></i></a>
+        {{/each}}
+    </toolbar>
+</script>
+
+<!-- 标题栏右侧的工具栏，适用于Workspace状态 -->
+<script id="tpl_header-workspace-filelist" type='text/html'>
+    <!-- 文件浏览 -->
+    <div class="mui-dropdown">
+        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+          <div class="mui--text-center align-middle rs-badge">{{fileList.length}}</div>
+        </button>
+        <ul class="mui-dropdown__menu mui-dropdown__menu--right rs-ul-filelist">
+          {{each fileList as fileObj i}}
+          <li data-id="{{ fileObj.id }}">
+              <a href="#/worksace_file/{{ fileObj.id }}" title="{{fileObj.showToolTip}}">
+                  {{ if curFileId === fileObj.id }}
+                        <span class="mui--text-center align-middle rs-badge rs-mark-current">{{++i}}.</span> {{fileObj.name}}
+                  {{ else }}
+                        <span class="mui--text-center align-middle rs-badge">{{++i}}.</span> {{fileObj.name}}
+                  {{ /if }}
+              </a>
+          </li>
+          {{/each}}
+        </ul>
+    </div>
+
+    <!-- 文件分享及发布工具 -->
+    {{if moreTools.enable}}
+    <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+        <i class="fa {{moreTools.class}}"></i>
+    </button>
+    <ul class="mui-dropdown__menu mui-dropdown__menu--right">
+      {{each moreTools.tools as tool tindex}}
+      <li>
+          <a href="{{tool.href}}" title="{{tool.description}}"><i class="fa {{tool.class}}" ></i>  {{ tool.name }}</a>
+      </li>
+      {{/each}}
+    </ul>
+    {{/if}}
+    <toolbar>
+        {{each buttons as button i}}
+        <a href="{{button.href}}" class="mui-btn mui-btn--primary mui-btn--raised" title="{{button.name}}"><i class="fa {{button.class}}" ></i></a>
+        {{/each}}
+    </toolbar>
+</script>
+
+<!-- 标题栏右侧的工具栏，适用于Settings状态 -->
+<script id="tpl_header-settings" type='text/html'>
+    <toolbar>
+        {{each buttons as button i}}
+        <a href="{{button.href}}" class="mui-btn mui-btn--primary mui-btn--raised" title="{{button.name}}"><i class="fa {{button.class}}" ></i></a>
+        {{/each}}
+    </toolbar>
+</script>
+
+<!--  -->
+<script id="tpl_files" type='text/html'>
+    <!--文件视图-->
+    <div class="mui-container-fluid rs-top-pandding-panel">
+        <div class="mui-container-fluid">
+            <table class="mui-table">
+              <thead>
+              </thead>
+              <tbody>
+                {{each files as obj i}}
+                <tr data-id="fileId_{{obj.id}}">
+                  <td>
+                      {{ if curFileId === obj.id }}
+                          <label class="rs-mark-current" title="current editing file in workspace.."><span>{{ i+1 }}</span></label>
+                      {{ else }}
+                          <label>{{ i+1 }}</label>
+                      {{ /if }}
+                  </td>
+                  <td>
+                      <div class="mui-textfield">
+                          <input type="text" data-id="{{ obj.id }}" data-field="name" value="{{ obj.name }}" title="{{ obj.name }}">
+                      </div>
+                  </td>
+                  <td>
+                      <div class="mui-textfield">
+                          <input type="text" class="mui-text-center" data-id="{{ obj.id }}" data-field="path" value="{{ obj.path }}" title="{{ obj.path }}" readonly>
+                      </div>
+                  </td>
+                  <td>
+                      {{each buttons as button i_btn}}
+                      <a href="{{button.href}}/{{obj.id}}" class="mui-btn mui-btn--small" title="{{button.name}}"><i class="fa {{button.class}}" ></i></a>
+                      {{/each}}
+                  </td>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+        </div>
+    </div>
+</script>
+
+<script id="tpl_workspace" type='text/html'>
+    <!--主要编辑器部分-->
+</script>
+
+<script id="tpl_pluginsMgr" type='text/html'>
+    <!--插件视图-->
+    <div class="mui-panel">
+        <div class="mui-z5 mui-text-right">
+            {{ if (enableBuyRestoreBtn) }}
+            <button class="mui-btn mui-btn-accent mui-btn-raised" onclick="window.UI.c$.UIActions.buyRestore()">
+                {{btnBuyRestoreTitle}}
+            </button>
+            {{ /if }}
+        </div>
+
+        <div class="mui-panel contentViewContainer">
+            {{each plugins as obj i}}
+            <section class="mui-row">
+                <div class="mui-col-md-1">
+                    <a rel target="_blank">
+                        <img class="plugin-screen" src="{{ obj.imageUrl }}">
+                    </a>
+                </div>
+                <div class="mui-col-md-9">
+                    <div class="mui-row">
+                        <span class="mui-text-title">{{ obj.name }}</span>
+                    </div>
+                    <div class="mui-row">
+                        <span class="mui-text-caption">{{ obj.description }}</span>
+                    </div>
+                </div>
+                <div class="mui-col-md-2 mui-text-right">
+                    <a data-id="{{ obj.id }}">
+                        {{if (obj.quantity == 0 && obj.inAppStore == true)}}
+
+                        <button class="mui-btn mui-btn-danger mui-btn-raised"
+                                onclick="window.UI.c$.UIActions.buyPlugin('{{ obj.id }}')">{{btnBuyTitle}}
+                        </button>
+                        {{else}}
+                        <button class="mui-btn mui-btn-default mui-btn-flat" disabled>
+                        </button>
+                        {{/if}}
+                    </a>
+                </div>
+            </section>
+            {{/each}}
+        </div>
+    </div>
+</script>
+
+<script id="tpl_settings" type='text/html'>
+    <!--设置-->
+    <div class="mui-panel rs-top-pandding-panel">
+        <div id="app-settings-code"></div>
+    </div>
+</script>
+
+<script id="tpl_about" type='text/html'>
+    <!--关于部分-->
+    <div class="mui-panel contentViewContainer">
+        <div class="mui-row">
+            <div class="mui-col-lg-1 mui-col-md-1 mui-col-xs-2">
+                <img src="{{ logoUrl }}" />
+            </div>
+            <div class="mui-col-lg-8 mui-col-md-8 mui-col-xs-8">
+                <strong class="mui-align-middle mui-text-subhead">{{ appName }} Ver.{{ version }}</strong>
+                <p>
+                    {{ description }}
+                </p>
+            </div>
+        </div>
+        <div class="mui-text-left">
+            <div>
+                <strong>{{ copyright }}</strong>
+            </div>
+            <div>
+                <strong>{{ appName }} {{ creditsTitle }}</strong>
+            </div>
+        </div>
+        <!--使用第三方软件信息-->
+        <div class="mui-panel ref-credits">
+            <ul>
+            {{each credits as creditObj j}}
+                <li>
+                    <section class="mui-row">
+                        <div class="third-product">
+                            <div class="mui-col-md-10 mui-col-xs-8 mui-col-lg-10">
+                                <span class="">{{ j+1 }}. {{ creditObj.title }}</span>
+                            </div>
+                            <div class="mui-col-md-1 mui-col-xs-2 mui-col-lg-1 mui-text-center">
+                                <a class="third-homepage" data-url="{{ creditObj.homepageUrl }}">HomePage</a>
+                            </div>
+                            <div class="mui-col-md-1 mui-col-xs-2 mui-col-lg-1 mui-text-center">
+                                <a class="third-show" data-creditid="{{ creditObj.id }}" data-url="{{ creditObj.licenseUrl }}">License</a>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="mui-row">
+                        <div class="third-licence" data-creditid="{{ creditObj.id }}">
+                            <!--协议内容-->
+                        </div>
+                    </section>
+                </li>
+            {{/each}}
+            </ul>
+        </div>
+
+    </div>
+</script>
+
+
+<!--基础库加载-->
+<script src="common/underscore/1.8.3/underscore-min.js"></script>
+<script src="common/jquery/jquery-1.12.4.min.js"
+        onload="(function(){ try{window.$ = window.jQuery = module.exports;}catch(e){console.warn(e)}})();"></script>
+<script src="common/jquery/jquery-json/2.5.1/jquery.json.min.js"></script>
+<script src="common/jquery/layer-v1.9.3/layer.js"></script>
+
+
+<!--核心启动加载-->
+<script src="sdk/util.js"></script>
+<script src="sdk/bs.js"></script>
+
+<!--加载国际化-->
+<script src="common/format.js/intl/1.0.0/Intl.min.js"></script>
+<script src="common/format.js/intl-messageformat/1.1.0/intl-messageformat-with-locales.min.js"></script>
+
+<!--加载text-encoding -->
+<!--<script>window.TextEncoder = window.TextDecoder = null;</script>-->
+<!--<script src="common/text-encoding/lib/encoding-indexes.js"></script>-->
+<!--<script src="common/text-encoding/lib/encoding.js"></script>-->
+<!--<script src="common/sql.js/3.15.1/sql.js"></script>-->
+
+<!--加载路由设置-->
+<script src="common/director.js/director.min.js"></script>
+
+<!--加载组件 -->
+<script src="common/mui/mui-0.6.5/js/mui_rsfix.js"></script>
+<script src="common/artTemplate/3.0/template.js"></script>
+<script src="common/editor.md/1.6.0/editor.md/editormd.js"></script>
+<script src="common/jsoneditor/5.5.5/jsoneditor.min.js"></script>
+
+<!--引入Backbone.js-->
+<script src="common/Backbone.js/1.2.3/backbone-min.js"></script>
+
+<!-- 加入jsOAuth -->
+<script src="common/jsOAuth/jsOAuth-1.3.7.min.js"></script>
+
+<!-- 引入印象笔记evernote -->
+<script src="common/evernote/1.25/evernote-sdk-minified.js"></script>
+
+<!--AppConfig-->
+<script src="js/config.js"></script>
+
+<!--插件部分加载-->
+<script src="js/plugins/plugin.iap.js"></script>
+<script src="js/plugins/plugin.cache.js"></script>
+<script src="js/plugins/plugin.files-cache.js"></script>
+<script src="js/plugins/plugin.user-settings.js"></script>
+<script src="js/plugins/plugin.file-editor-mgr.js"></script>
+<script src="js/plugins/plugin.editormd.js"></script>
+<script src="js/plugins/plugin.evernote.js"></script>
+
+
+<!--App-->
+<script src="js/app.js"></script>
+<script type="text/javascript">
+    window.UI.c$.launch();
+</script>
+</body>
+</html>
